@@ -19,12 +19,12 @@ services:
 
   frontend:
     build:
-      context: ./shadcn-admin-main
+      context: ./frontend
       dockerfile: Dockerfile
     ports:
       - '7381:7381'
     volumes:
-      - ./shadcn-admin-main:/app
+      - ./frontend:/app
       - /app/node_modules
     depends_on:
       - backend
