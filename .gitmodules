@@ -1,0 +1,6 @@
+[submodule "frontend"]
+	path = frontend
+	url = git@github.com:MumsStudio/shadcn_admin.git
+[submodule "backend"]
+	path = backend
+	url = git@github.com:MumsStudio/shadcn_back.git

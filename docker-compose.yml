@@ -1,0 +1,52 @@
+
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres       # 数据库用户名
+      POSTGRES_PASSWORD: 123456     # 数据库密码
+      POSTGRES_DB: postgres         # 数据库名
+      POSTGRES_SCHEMA: public
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./shadcn-admin-main
+      dockerfile: Dockerfile
+    ports:
+      - '7381:7381'
+    volumes:
+      - ./shadcn-admin-main:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    environment:
+      - NODE_ENV=development
+
+  backend:
+    build:
+      context: ./shadcn-backup
+      dockerfile: Dockerfile
+    ports:
+      - '7382:7382'
+    volumes:
+      - ./shadcn-backup:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:123456@db:5432/postgres?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+    command: sh -c "npx prisma migrate dev --name init && npm run start:dev"
+
+volumes:
+  db_data:
